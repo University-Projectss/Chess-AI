@@ -1,8 +1,96 @@
+/**
+ *
+ * I will play white, an the AI will play black
+ *
+ * Pieces weights are set acording to Sunfish.py
+ *
+ */
+
 let board = null;
 let game = new Chess();
 
 let whiteSquareGrey = "#a9a9a9";
 let blackSquareGrey = "#696969";
+
+let weights = {
+  P: 1,
+  N: 3,
+  B: 3,
+  R: 5,
+  Q: 9,
+  K: 999,
+};
+
+/**
+ *
+ * AI LOGIC
+ *
+ */
+const getBestMove = () => {
+  let moves = game.ugly_moves();
+  let bestMove = null;
+  let bestValue = Infinity;
+
+  for (let move of moves) {
+    game.ugly_move(move);
+    let boardValue = evaluateBoard(game.board());
+    // console.log(boardValue);
+    game.undo();
+
+    if (boardValue < bestValue) {
+      bestValue = boardValue;
+      bestMove = move;
+    }
+  }
+
+  return bestMove;
+};
+
+const evaluateBoard = (board) => {
+  let eval = 0;
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      eval += getPieceValue(board[i][j]);
+    }
+  }
+
+  return eval;
+};
+
+const getPieceValue = (piece) => {
+  if (piece === null) return 0;
+
+  if (piece.color === "w") return weights[piece.type.toUpperCase()];
+  else return -weights[piece.type.toUpperCase()];
+};
+
+//winning some material
+const makeBetterMove = () => {
+  if (game.game_over()) return;
+
+  let move = getBestMove();
+  console.log(move);
+  game.ugly_move(move);
+  board.position(game.fen());
+};
+
+//random moves
+const makeRandomMove = () => {
+  let possibleMoves = game.moves();
+
+  // exit if the game is over
+  if (game.game_over()) return;
+
+  let randomIdx = Math.floor(Math.random() * possibleMoves.length);
+  game.move(possibleMoves[randomIdx]);
+  board.position(game.fen());
+};
+
+/**
+ *
+ * BOARD ACTIONS
+ *
+ */
 
 const removeGreySquares = () => {
   $("#board .square-55d63").css("background", "");
@@ -17,17 +105,6 @@ const greySquare = (square) => {
   }
 
   $square.css("background", background);
-};
-
-const makeRandomMove = () => {
-  let possibleMoves = game.moves();
-
-  // exit if the game is over
-  if (game.game_over()) return;
-
-  let randomIdx = Math.floor(Math.random() * possibleMoves.length);
-  game.move(possibleMoves[randomIdx]);
-  board.position(game.fen());
 };
 
 const onMouseoverSquare = (square, piece) => {
@@ -82,8 +159,15 @@ const onDrop = (source, target) => {
 
 const onSnapEnd = () => {
   board.position(game.fen());
-  makeRandomMove();
+  // makeRandomMove();
+  makeBetterMove();
 };
+
+/**
+ *
+ * BOARD CONFIG
+ *
+ */
 
 let config = {
   position: "start",
@@ -94,5 +178,4 @@ let config = {
   onDrop: onDrop,
   onSnapEnd: onSnapEnd,
 };
-
 board = Chessboard("board", config);
