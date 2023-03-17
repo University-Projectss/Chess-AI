@@ -2,7 +2,7 @@
  *
  * I will play white, an the AI will play black
  *
- * Pieces weights are set acording to Sunfish.py
+ * At this moment the AI will know to capture my pieces
  *
  */
 
