@@ -2,9 +2,12 @@
  *
  * I will play white, an the AI will play black
  *
- * At this moment the AI will know to capture my pieces
+ * At this moment the AI can play minimax
+ *
+ * Use the variable depth to adjust the minimax tree depth
  *
  */
+let depth = 3;
 
 let board = null;
 let game = new Chess();
@@ -23,27 +26,55 @@ let weights = {
 
 /**
  *
- * AI LOGIC
+ * AI LOGIC WITH MINIMAX
  *
  */
+
 const getBestMove = () => {
   let moves = game.ugly_moves();
   let bestMove = null;
-  let bestValue = Infinity;
+  let bestValue = -Infinity;
 
   for (let move of moves) {
     game.ugly_move(move);
-    let boardValue = evaluateBoard(game.board());
+    let boardValue = minimax(game, depth, false);
     // console.log(boardValue);
     game.undo();
 
-    if (boardValue < bestValue) {
+    if (boardValue >= bestValue) {
       bestValue = boardValue;
       bestMove = move;
     }
   }
 
   return bestMove;
+};
+
+const minimax = (game, depth, isMaximizing) => {
+  if (depth === 1) {
+    //- because the black score is negative, and this way we make it > 0
+    return -evaluateBoard(game.board());
+  }
+
+  let moves = game.ugly_moves();
+
+  if (isMaximizing) {
+    let bestScore = -Infinity;
+    for (let move of moves) {
+      game.ugly_move(move);
+      bestScore = Math.max(bestScore, minimax(game, depth - 1, !isMaximizing));
+      game.undo();
+    }
+    return bestScore;
+  } else {
+    let bestScore = Infinity;
+    for (let move of moves) {
+      game.ugly_move(move);
+      bestScore = Math.min(bestScore, minimax(game, depth - 1, !isMaximizing));
+      game.undo();
+    }
+    return bestScore;
+  }
 };
 
 const evaluateBoard = (board) => {
@@ -69,20 +100,8 @@ const makeBetterMove = () => {
   if (game.game_over()) return;
 
   let move = getBestMove();
-  console.log(move);
+  // console.log(move);
   game.ugly_move(move);
-  board.position(game.fen());
-};
-
-//random moves
-const makeRandomMove = () => {
-  let possibleMoves = game.moves();
-
-  // exit if the game is over
-  if (game.game_over()) return;
-
-  let randomIdx = Math.floor(Math.random() * possibleMoves.length);
-  game.move(possibleMoves[randomIdx]);
   board.position(game.fen());
 };
 
@@ -159,8 +178,7 @@ const onDrop = (source, target) => {
 
 const onSnapEnd = () => {
   board.position(game.fen());
-  // makeRandomMove();
-  makeBetterMove();
+  setTimeout(makeBetterMove, 100);
 };
 
 /**
