@@ -9,7 +9,7 @@
  */
 let depth = 1;
 
-let positionsCount;
+let positionsCount, positionsCountBad;
 
 let board = null;
 let game = new Chess();
@@ -42,11 +42,12 @@ const getBestMove = () => {
   let bestMove = null;
   let bestValue = -Infinity;
   positionsCount = 0;
+  positionsCountBad = 0;
 
   for (let move of moves) {
     game.ugly_move(move);
     let boardValue = minimax(game, depth, false, -Infinity, Infinity);
-    // console.log(boardValue);
+    // let boardValue = minimaxBad(game, depth, false);
     game.undo();
 
     if (boardValue >= bestValue) {
@@ -55,13 +56,14 @@ const getBestMove = () => {
     }
   }
 
-  console.log("Positions evaluated: ", positionsCount);
+  console.log("Minimax + alpha beta pruning: ", positionsCount);
+  // console.log("Minimax: ", positionsCountBad);
 
   return bestMove;
 };
 
 const minimax = (game, depth, isMaximizing, alpha, beta) => {
-  positionsCount += 1;
+  positionsCount++;
   if (depth <= 1) {
     //- because the black score is negative, and this way we make it > 0
     return -evaluateBoard(game.board());
@@ -81,7 +83,7 @@ const minimax = (game, depth, isMaximizing, alpha, beta) => {
 
       alpha = Math.max(alpha, bestScore);
 
-      if (beta <= alpha) break;
+      if (beta <= alpha) return bestScore;
     }
     return bestScore;
   } else {
@@ -96,7 +98,41 @@ const minimax = (game, depth, isMaximizing, alpha, beta) => {
 
       beta = Math.min(beta, bestScore);
 
-      if (beta <= alpha) break;
+      if (beta <= alpha) return bestScore;
+    }
+    return bestScore;
+  }
+};
+
+const minimaxBad = (game, depth, isMaximizing) => {
+  positionsCountBad++;
+  if (depth <= 1) {
+    //- because the black score is negative, and this way we make it > 0
+    return -evaluateBoard(game.board());
+  }
+
+  let moves = game.ugly_moves();
+
+  if (isMaximizing) {
+    let bestScore = -Infinity;
+    for (let move of moves) {
+      game.ugly_move(move);
+      bestScore = Math.max(
+        bestScore,
+        minimaxBad(game, depth - 1, !isMaximizing)
+      );
+      game.undo();
+    }
+    return bestScore;
+  } else {
+    let bestScore = Infinity;
+    for (let move of moves) {
+      game.ugly_move(move);
+      bestScore = Math.min(
+        bestScore,
+        minimaxBad(game, depth - 1, !isMaximizing)
+      );
+      game.undo();
     }
     return bestScore;
   }
