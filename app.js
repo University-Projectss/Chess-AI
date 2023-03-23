@@ -7,10 +7,17 @@
  * Use the variable depth to adjust the minimax tree depth
  *
  */
-let depth = 3;
+let depth = 1;
+
+let positionsCount;
 
 let board = null;
 let game = new Chess();
+let depthSelector = document.getElementById("depthSelector");
+
+depthSelector.addEventListener("change", (e) => {
+  depth = e.target.value;
+});
 
 let whiteSquareGrey = "#a9a9a9";
 let blackSquareGrey = "#696969";
@@ -34,10 +41,11 @@ const getBestMove = () => {
   let moves = game.ugly_moves();
   let bestMove = null;
   let bestValue = -Infinity;
+  positionsCount = 0;
 
   for (let move of moves) {
     game.ugly_move(move);
-    let boardValue = minimax(game, depth, false);
+    let boardValue = minimax(game, depth, false, -Infinity, Infinity);
     // console.log(boardValue);
     game.undo();
 
@@ -47,11 +55,14 @@ const getBestMove = () => {
     }
   }
 
+  console.log("Positions evaluated: ", positionsCount);
+
   return bestMove;
 };
 
-const minimax = (game, depth, isMaximizing) => {
-  if (depth === 1) {
+const minimax = (game, depth, isMaximizing, alpha, beta) => {
+  positionsCount += 1;
+  if (depth <= 1) {
     //- because the black score is negative, and this way we make it > 0
     return -evaluateBoard(game.board());
   }
@@ -62,16 +73,30 @@ const minimax = (game, depth, isMaximizing) => {
     let bestScore = -Infinity;
     for (let move of moves) {
       game.ugly_move(move);
-      bestScore = Math.max(bestScore, minimax(game, depth - 1, !isMaximizing));
+      bestScore = Math.max(
+        bestScore,
+        minimax(game, depth - 1, !isMaximizing, alpha, beta)
+      );
       game.undo();
+
+      alpha = Math.max(alpha, bestScore);
+
+      if (beta <= alpha) break;
     }
     return bestScore;
   } else {
     let bestScore = Infinity;
     for (let move of moves) {
       game.ugly_move(move);
-      bestScore = Math.min(bestScore, minimax(game, depth - 1, !isMaximizing));
+      bestScore = Math.min(
+        bestScore,
+        minimax(game, depth - 1, !isMaximizing, alpha, beta)
+      );
       game.undo();
+
+      beta = Math.min(beta, bestScore);
+
+      if (beta <= alpha) break;
     }
     return bestScore;
   }
