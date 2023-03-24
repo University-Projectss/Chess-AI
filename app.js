@@ -232,13 +232,13 @@ const getPieceValue = (piece, i, j) => {
   if (piece.color === "w")
     return (
       weights[piece.type.toUpperCase()] +
-      pstWhite[piece.type.toUpperCase()][j][i]
+      pstWhite[piece.type.toUpperCase()][i][j]
     );
   else
     return (
       -1 *
       (weights[piece.type.toUpperCase()] +
-        pstBlack[piece.type.toUpperCase()][j][i])
+        pstBlack[piece.type.toUpperCase()][i][j])
     );
 };
 
