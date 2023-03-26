@@ -6,6 +6,7 @@
 ## Rating
 
  With depth 3, it is evaluated with 1100 ELO(Draw with 1100 chess.com engine).
+
  With depth 4, it is evaluated with 1300 ELO(Draw with 1300 chess.com engine).
 
 ## Dependencies
