@@ -3,6 +3,10 @@
 
  I don't like the AI course from college so I decided to build an AI on my own.
 
+## Rating
+
+ With depth 3, it is evaluated with 1100 ELO.
+
 ## Dependencies
 
 [chessboard.js](https://chessboardjs.com/index.html) to display the board
