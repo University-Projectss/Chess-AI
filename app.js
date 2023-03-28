@@ -9,6 +9,10 @@
  */
 let depth = 1;
 
+window.alert(
+  "The selector in the right is the difficulty level: 1-easy, 4-hard"
+);
+
 let positionsCount, positionsCountBad;
 
 let board = null;
