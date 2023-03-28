@@ -2,6 +2,10 @@
 
 I don't like the AI course from college so I decided to build an AI on my own.
 
+## Info
+
+The selector in the right is for depth(difficulty): 1 is very easy, 4 is the hardest
+
 ## Rating
 
 With depth 3, it is evaluated with 1100 ELO(Draw with 1100 chess.com engine).
