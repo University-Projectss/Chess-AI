@@ -116,7 +116,14 @@ let pstBlack = {
  */
 
 const getBestMove = () => {
-  let moves = game.ugly_moves();
+  let movesCaptured = game.ugly_moves().filter((m) => {
+    return m.captured != undefined;
+  });
+  let movesNoCaptured = game.ugly_moves().filter((m) => {
+    return m.captured == undefined;
+  });
+  let moves = [...movesCaptured, ...movesNoCaptured];
+
   let bestMove = null;
   let bestValue = -Infinity;
   positionsCount = 0;
