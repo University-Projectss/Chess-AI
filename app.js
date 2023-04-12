@@ -252,7 +252,10 @@ const getPieceValue = (piece, i, j) => {
 };
 
 const makeBetterMove = () => {
-  if (game.game_over()) return;
+  if (game.game_over()) {
+    alert("YOU WIN!");
+    return false;
+  }
 
   const t1 = new Date().getTime();
   let move = getBestMove();
@@ -312,7 +315,10 @@ const onMouseoutSquare = (square, piece) => {
 
 const onDragStart = (source, piece) => {
   //check if is game over first
-  if (game.game_over()) return false;
+  if (game.game_over()) {
+    alert("YOU LOST!");
+    return false;
+  }
 
   //check if its my turn
   if (
